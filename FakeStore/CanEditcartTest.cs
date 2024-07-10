@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FakeStore.DataForTestst;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -7,35 +7,44 @@ namespace MyTests
     [TestClass]
     public class CanEditCartTest
     {
-        public IWebDriver _driver;
-        public TestDataBaseClass _homePage;
-        public AccountPage _accountPage;
-        public UserData _userData;
+        private IWebDriver _driver = null!;
+        private BasePage _basePage = null!;
+        private AccountPage _accountPage = null!;
+        private UserData _userData = null!;
 
         [TestInitialize]
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _homePage = new TestDataBaseClass(_driver);
-            _homePage.NavigateToMainPage();
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            _basePage = new BasePage(_driver);
             _accountPage = new AccountPage(_driver);
             _userData = new UserData();
+
+            _basePage.NavigateToMainPage();
         }
 
         [TestMethod]
         public void CanEditCart()
         {
-            _homePage.ClickAddToCartButton();
+            // Arrange
+            var productPage = _basePage.ClickAddToCartButton();
 
+            // Act
             _accountPage.NavigateToCartPage();
+            _accountPage.CartEditing();
 
-            Assert.AreEqual("2", _accountPage.CartEditting("value"));
+            // Assert
+            string cartQuantity = _accountPage.GetCartQuantity();
+            Assert.AreEqual("3", cartQuantity, "Cart quantity was not updated correctly.");
         }
+
 
         [TestCleanup]
         public void TearDown()
         {
-            _driver.Quit();
+            _driver?.Quit();
         }
     }
 }

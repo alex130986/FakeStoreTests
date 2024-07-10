@@ -1,46 +1,47 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-
 
 namespace MyTests
 {
     [TestClass]
     public class NewUserAddressCorrectionTest
     {
-        public IWebDriver _driver;
-        public AccountPage _accountPage;
-        public UserData _userData;
-
-        public const string expectedUrl = "https://fakestore.testelka.pl/moje-konto/edytuj-adres/";
+        private IWebDriver _driver = null!;
+        private AccountPage _accountPage = null!;
+        private UserData _userData = null!;
 
         [TestInitialize]
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _accountPage = new AccountPage(_driver);
-            _accountPage.NavigateToAddressPage();
-            _userData = new UserData();
-        }
-        [TestMethod]
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-        public void CanChangeDeliveryAdress()
+            _accountPage = new AccountPage(_driver);
+            _userData = new UserData();
+
+            _accountPage.NavigateToAccountPage();
+        }
+
+        [TestMethod]
+        public void CanChangeDeliveryAddress()
         {
+            // Arrange
             _accountPage.FillRegistrationFormNewUser(_userData);
 
+            // Act
             _accountPage.NavigateToAddressPage();
+            _accountPage.DataForChangingAddress(_userData);
 
-            _accountPage.DataForChangingAdress(_userData);
-
+            // Assert
             var actualUrl = _driver.Url;
-
-            Assert.AreEqual(expectedUrl, actualUrl, $"The expected URL address is '{expectedUrl}', but the actual URL address is '{actualUrl}'.");
+            Assert.AreEqual(LocatorsAndUrls.Urls.ShipmentAdressCorrection, actualUrl,
+                $"The expected URL address is '{LocatorsAndUrls.Urls.ShipmentAdressCorrection}', but the actual URL address is '{actualUrl}'.");
         }
 
         [TestCleanup]
         public void TearDown()
         {
-            _driver.Quit();
+            _driver?.Quit();
         }
     }
 }

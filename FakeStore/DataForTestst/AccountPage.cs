@@ -1,143 +1,132 @@
-﻿using OpenQA.Selenium;
-using System.Threading;
+﻿using FakeStore.DataForTestst;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 
 namespace MyTests
 {
-    public class AccountPage
+    public class AccountPage : BasePage
     {
-        public const string AcountPageUrl = "https://fakestore.testelka.pl/moje-konto/";
-        public const string AccountAddressPage = "https://fakestore.testelka.pl/moje-konto/edytuj-adres/przesylki/";
-        public const string CartPage = "https://fakestore.testelka.pl/koszyk/";
+        private readonly IWebDriver _driver;
 
-        public readonly IWebDriver _driver;
-
-        public AccountPage(IWebDriver driver)
+        public AccountPage(IWebDriver driver) : base(driver)
         {
             _driver = driver;
         }
 
-        public void DataForChangingAdressExistingUser(UserData userData)
+        public void DataForChangingAddressExistingUser(UserData userData)
         {
-            var shippingFirstName = _driver.FindElement(By.XPath("//input[@id='shipping_first_name']"));
-            shippingFirstName.Clear();
-            shippingFirstName.SendKeys(userData.Name);
-
-            var shippingLastName = _driver.FindElement(By.XPath("//input[@id='shipping_last_name']"));
-            shippingLastName.Clear();
-            shippingLastName.SendKeys(userData.Surname);
-
-            var countryDropDown = _driver.FindElement(By.XPath("//span[@id='select2-shipping_country-container']"));
-            countryDropDown.Click();
-
-            var sendCountryName = _driver.FindElement(By.XPath("//input[@class='select2-search__field']"));
-            sendCountryName.SendKeys(userData.Country);
-
-            var highlitedDropDownCountry = _driver.FindElement(By.XPath("//li[@class='select2-results__option select2-results__option--highlighted']"));
-            highlitedDropDownCountry.Click();
-
-            var shippingStreet = _driver.FindElement(By.XPath("//input[@id='shipping_address_1']"));
-            shippingStreet.Clear();
-            shippingStreet.SendKeys(userData.Street);
-
-            var shippingCity = _driver.FindElement(By.XPath("//input[@id='shipping_city']"));
-            shippingCity.Clear();
-            shippingCity.SendKeys(userData.City);
-
-            var shippingPostalCode = _driver.FindElement(By.XPath("//input[@id='shipping_postcode']"));
-            shippingPostalCode.Clear();
-            shippingPostalCode.SendKeys(userData.PostalCode);
-
-            var submitAddress = _driver.FindElement(By.XPath("//button[@name='save_address']"));
-            submitAddress.Click();
+            EnterShippingDetails(userData, true);
         }
-        public void DataForChangingAdress(UserData userData)
+
+        public void DataForChangingAddress(UserData userData)
         {
-            var shippingFirstName = _driver.FindElement(By.XPath("//input[@id='shipping_first_name']"));
-            shippingFirstName.SendKeys(userData.Name);
-
-            var shippingLastName = _driver.FindElement(By.XPath("//input[@id='shipping_last_name']"));
-            shippingLastName.SendKeys(userData.Surname);
-
-            var countryDropDown = _driver.FindElement(By.XPath("//span[@id='select2-shipping_country-container']"));
-            countryDropDown.Click();
-
-            var sendCountryName = _driver.FindElement(By.XPath("//input[@class='select2-search__field']"));
-            sendCountryName.SendKeys(userData.Country);
-
-            var highlitedDropDownCountry = _driver.FindElement(By.XPath("//li[@class='select2-results__option select2-results__option--highlighted']"));
-            highlitedDropDownCountry.Click();
-
-            var shippingStreet = _driver.FindElement(By.XPath("//input[@id='shipping_address_1']"));
-            shippingStreet.SendKeys(userData.Street);
-
-            var shippingCity = _driver.FindElement(By.XPath("//input[@id='shipping_city']"));
-            shippingCity.SendKeys(userData.City);
-
-            var shippingPostalCode = _driver.FindElement(By.XPath("//input[@id='shipping_postcode']"));
-            shippingPostalCode.SendKeys(userData.PostalCode);
-
-            var submitAddress = _driver.FindElement(By.XPath("//button[@name='save_address']"));
-            submitAddress.Click();
+            EnterShippingDetails(userData, false);
         }
+
+        private void EnterShippingDetails(UserData userData, bool clearFields)
+        {
+            EnterText(LocatorsAndUrls.AccountPage.ShippingFirstName, userData.Name, clearFields);
+            EnterText(LocatorsAndUrls.AccountPage.ShippingLastName, userData.Surname, clearFields);
+            SelectCountry(userData.Country);
+            EnterText(LocatorsAndUrls.AccountPage.ShippingStreet, userData.Street, clearFields);
+            EnterText(LocatorsAndUrls.AccountPage.ShippingCity, userData.City, clearFields);
+            EnterText(LocatorsAndUrls.AccountPage.ShippingPostalCode, userData.PostalCode, clearFields);
+            ClickElement(LocatorsAndUrls.AccountPage.SubmitAddressButton);
+        }
+
+        private void SelectCountry(string country)
+        {
+            ClickElement(LocatorsAndUrls.AccountPage.CountryDropDown);
+            EnterText(LocatorsAndUrls.AccountPage.CountrySearchField, country);
+            ClickElement(LocatorsAndUrls.AccountPage.HighlightedCountryOption);
+        }
+
         public void FillRegistrationFormNewUser(UserData userData)
         {
-            var registrationEmail = _driver.FindElement(By.XPath("//*[@id='reg_email'] "));
-            registrationEmail.SendKeys(userData.EmailAdress);
-
-            var userPassword = _driver.FindElement(By.XPath("//*[@id='reg_password']"));
-            userPassword.SendKeys(userData.ExistingUserPassword);
-
-            var dismissLink = _driver.FindElement(By.XPath("//a[@class ='woocommerce-store-notice__dismiss-link']"));
-            dismissLink.Click();
-
-            var registerButton = _driver.FindElement(By.XPath("//button[@name = 'register']"));
-            registerButton.Click();
-
+            EnterText(LocatorsAndUrls.AccountPage.RegistrationEmail, userData.EmailAdress);
+            EnterText(LocatorsAndUrls.AccountPage.RegistrationPassword, userData.ExistingUserPassword);
+            ClickElement(LocatorsAndUrls.Common.DismissLink);
+            ClickElement(LocatorsAndUrls.AccountPage.RegisterButton);
         }
+
         public void FillRegistrationFormExistingUser(UserData userData)
         {
-            var existingEmail = _driver.FindElement(By.XPath("//input[@id='username']"));
-            existingEmail.SendKeys(userData.ExistingEmailAdress);
-
-            var dismissLink = _driver.FindElement(By.XPath("//a[@class ='woocommerce-store-notice__dismiss-link']"));
-            dismissLink.Click();
-
-            var existingPassword = _driver.FindElement(By.XPath("//input[@id='password']"));
-            existingPassword.SendKeys(userData.ExistingUserPassword);
-
-            var logInButton = _driver.FindElement(By.XPath("//button[@name = 'login']"));
-            logInButton.Click();
+            EnterText(LocatorsAndUrls.AccountPage.ExistingEmail, userData.ExistingEmailAdress);
+            ClickElement(LocatorsAndUrls.Common.DismissLink);
+            EnterText(LocatorsAndUrls.AccountPage.ExistingPassword, userData.ExistingUserPassword);
+            ClickElement(LocatorsAndUrls.AccountPage.LogInButton);
         }
+
         public void NavigateToAddressPage()
         {
-            _driver.Navigate().GoToUrl(AccountAddressPage);
+            _driver.Navigate().GoToUrl(LocatorsAndUrls.Urls.AccountAddressPage);
         }
+
         public void NavigateToAccountPage()
         {
-            _driver.Navigate().GoToUrl(AcountPageUrl);
+            _driver.Navigate().GoToUrl(LocatorsAndUrls.Urls.AccountPage);
         }
+
         public void NavigateToCartPage()
         {
-            _driver.Navigate().GoToUrl(CartPage);
+            new Actions(_driver).MoveToElement(_driver.FindElement(LocatorsAndUrls.CartPage.CartIcon)).Perform();
 
+            _driver.FindElement(LocatorsAndUrls.CartPage.CartCheck).Click();
         }
-        public string CartEditting(string attributeName)
+
+
+        public void CartEditing()
         {
-            var cartValue = _driver.FindElement(By.XPath("//input[@class='input-text qty text']"));
-            cartValue.Clear();
-            cartValue.SendKeys("2");
+            IWebElement quantityInput = _driver.FindElement(LocatorsAndUrls.CartPage.CartQuantityInput);
 
-            var cartActualizationButton = _driver.FindElement(By.XPath("//button[@name='update_cart']"));
-            cartActualizationButton.Click();
+            quantityInput.Clear();
 
-            var newCartValue = _driver.FindElement(By.XPath("//input[@class='input-text qty text']"));
-            var valueAttribute = newCartValue.GetAttribute(attributeName);
+            quantityInput.SendKeys("3");
 
-            return valueAttribute;
+            ClickElement(LocatorsAndUrls.CartPage.UpdateCartButton);
+
         }
+
+        public string GetCartQuantity()
+        {
+            IWebElement quantityInput = _driver.FindElement(LocatorsAndUrls.CartPage.CartQuantityInput);
+            return quantityInput.GetAttribute("value");
+        }
+
         public bool IsLoggedIn()
         {
-            return _driver.Url == AcountPageUrl;
+            return _driver.Url == LocatorsAndUrls.Urls.AccountPage;
+        }
+
+        private void EnterText(By locator, string text, bool clearFirst = false)
+        {
+            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            var element = wait.Until(ExpectedConditions.ElementToBeClickable(locator));
+
+            if (clearFirst)
+            {
+                try
+                {
+                    element.Clear();
+                }
+                catch (InvalidElementStateException)
+                {
+                    ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].value = '';", element);
+                }
+            }
+
+        }
+
+        private new void ClickElement(By locator)
+        {
+            _driver.FindElement(locator).Click();
+        }
+
+        private string GetAttribute(By locator, string attributeName)
+        {
+            return _driver.FindElement(locator).GetAttribute(attributeName);
         }
     }
 }

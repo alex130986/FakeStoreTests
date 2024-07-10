@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
+﻿using FakeStore.DataForTestst;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -8,31 +7,38 @@ namespace MyTests
     [TestClass]
     public class CartTests
     {
-        private IWebDriver _driver;
-        private TestDataBaseClass _homePage;
+        private IWebDriver _driver = null!;
+        private BasePage _basePage = null!;
 
         [TestInitialize]
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _homePage = new TestDataBaseClass(_driver);
-            _homePage.NavigateToMainPage();
-        }
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
+            _basePage = new BasePage(_driver);
+            _basePage.NavigateToMainPage();
+        }
 
         [TestMethod]
         public void CanAddProductToCart()
         {
+            // Arrange
+            var initialCartCount = _basePage.GetCartCount();
 
-            _homePage.ClickAddToCartButton();
+            // Act
+            _basePage.ClickAddToCartButton();
+            var updatedCartCount = _basePage.GetCartCount();
 
-            NUnit.Framework.Assert.That(_homePage.GetCartCount(), Is.GreaterThanOrEqualTo(1));
+            // Assert
+            Assert.IsTrue(updatedCartCount > initialCartCount,
+                $"Cart count did not increase. Initial: {initialCartCount}, Updated: {updatedCartCount}");
         }
 
         [TestCleanup]
         public void TearDown()
         {
-            _driver.Quit();
+            _driver?.Quit();
         }
     }
 }
