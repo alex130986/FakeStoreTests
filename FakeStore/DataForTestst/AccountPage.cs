@@ -73,20 +73,19 @@ namespace MyTests
         {
             new Actions(_driver).MoveToElement(_driver.FindElement(LocatorsAndUrls.CartPage.CartIcon)).Perform();
 
-            _driver.FindElement(LocatorsAndUrls.CartPage.CartCheck).Click();
+            _driver.ToBeClickable(LocatorsAndUrls.CartPage.CartCheck).Click();
         }
 
 
         public void CartEditing()
         {
-            IWebElement quantityInput = _driver.FindElement(LocatorsAndUrls.CartPage.CartQuantityInput);
+            IWebElement quantityInput = _driver.ToBeClickable(LocatorsAndUrls.CartPage.CartQuantityInput);
 
             quantityInput.Clear();
 
             quantityInput.SendKeys("3");
 
-            ClickElement(LocatorsAndUrls.CartPage.UpdateCartButton);
-
+            _driver.ToBeClickable(LocatorsAndUrls.CartPage.UpdateCartButton).Click();
         }
 
         public string GetCartQuantity()

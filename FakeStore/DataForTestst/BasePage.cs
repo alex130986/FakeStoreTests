@@ -52,17 +52,19 @@ namespace FakeStore.DataForTestst
         {
             DismissNoticeIfPresent();
 
-            // Получаем текущее количество товаров в корзине перед добавлением нового
-            int initialCartCount = GetCartTotalAmount();
-
             ClickElement(LocatorsAndUrls.ProductPage.AddToCartButton);
 
-            // Ожидаем увеличения количества товаров в корзине
-            //WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            //wait.Until(driver => GetCartItemCount() > initialCartCount);
-
+            WaitForAjaxCompletion();
             WaitForPageLoad();
+
             return new ProductPage(Driver);
+        }
+
+        public void WaitForAjaxCompletion()
+        {
+            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+            wait.Until(driver => (bool)((IJavaScriptExecutor)driver).ExecuteScript(
+                "return (typeof jQuery !== 'undefined') ? jQuery.active === 0 : true"));
         }
 
         private int GetCartTotalAmount()
