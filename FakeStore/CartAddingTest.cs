@@ -14,8 +14,6 @@ namespace MyTests
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
             _basePage = new BasePage(_driver);
             _basePage.NavigateToMainPage();
         }
@@ -27,7 +25,7 @@ namespace MyTests
             var initialCartCount = _basePage.GetCartCount();
 
             // Act
-            _basePage.ClickAddToCartButton();
+            var productPage = _basePage.ClickAddToCartButton();
             var updatedCartCount = _basePage.GetCartCount();
 
             // Assert

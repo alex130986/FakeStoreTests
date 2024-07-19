@@ -14,8 +14,6 @@ namespace MyTests
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
             _accountPage = new AccountPage(_driver);
             _userData = new UserData();
 
@@ -25,6 +23,9 @@ namespace MyTests
         [TestMethod]
         public void CanLoginExistingAccount()
         {
+            // Arrange
+            //Nothing to do because everything is already done in SetUp
+
             // Act
             _accountPage.FillRegistrationFormExistingUser(_userData);
 

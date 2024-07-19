@@ -13,8 +13,6 @@ namespace MyTests
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
             _accountPage = new AccountPage(_driver);
             _accountPage.NavigateToAccountPage();
         }

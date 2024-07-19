@@ -9,29 +9,30 @@ namespace FakeStore.DataForTestst
     public class BasePage
     {
         protected readonly IWebDriver Driver;
-
-
+        protected readonly WebDriverWait Wait;
 
         public BasePage(IWebDriver driver)
         {
             Driver = driver;
+            Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         protected IWebElement WaitAndFindElement(By locator)
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            return wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(locator));
+            return Wait.Until(ExpectedConditions.ElementExists(locator));
         }
-
 
         protected void EnterText(By locator, string text)
         {
-            WaitAndFindElement(locator).SendKeys(text);
+            var element = WaitAndFindElement(locator);
+            element.Clear();
+            element.SendKeys(text);
         }
 
         protected void ClickElement(By locator)
         {
-            WaitAndFindElement(locator).Click();
+            var element = Wait.Until(ExpectedConditions.ElementToBeClickable(locator));
+            element.Click();
         }
 
         protected void DismissNoticeIfPresent()
@@ -51,41 +52,17 @@ namespace FakeStore.DataForTestst
         public ProductPage ClickAddToCartButton()
         {
             DismissNoticeIfPresent();
-
             ClickElement(LocatorsAndUrls.ProductPage.AddToCartButton);
-
             WaitForAjaxCompletion();
             WaitForPageLoad();
-
             return new ProductPage(Driver);
         }
 
         public void WaitForAjaxCompletion()
         {
-            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            wait.Until(driver => (bool)((IJavaScriptExecutor)driver).ExecuteScript(
+            Wait.Until(driver => (bool)((IJavaScriptExecutor)driver).ExecuteScript(
                 "return (typeof jQuery !== 'undefined') ? jQuery.active === 0 : true"));
         }
-
-        private int GetCartTotalAmount()
-        {
-            try
-            {
-                var cartCountElement = Driver.FindElement(LocatorsAndUrls.CartPage.CartTotalAmount);
-                string countText = cartCountElement.Text;
-                return int.Parse(countText);
-            }
-            catch (NoSuchElementException)
-            {
-                return 0;
-            }
-            catch (FormatException)
-            {
-                return 0;
-            }
-        }
-
-
 
         public int GetCartCount()
         {
@@ -103,7 +80,6 @@ namespace FakeStore.DataForTestst
             EnterText(LocatorsAndUrls.Checkout.BillingCity, userData.City);
             EnterText(LocatorsAndUrls.Checkout.BillingPhone, userData.PhoneNumber);
             EnterText(LocatorsAndUrls.Checkout.BillingEmail, userData.EmailAdress);
-
             ClickElement(LocatorsAndUrls.Checkout.StripeCardElement);
             WaitForPageLoad();
             EnterText(LocatorsAndUrls.Checkout.CardNumber, userData.CardNumber);
@@ -111,8 +87,7 @@ namespace FakeStore.DataForTestst
 
         protected void WaitForPageLoad()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+            Wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
         }
     }
 

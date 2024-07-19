@@ -16,8 +16,6 @@ namespace MyTests
         public void SetUp()
         {
             _driver = new ChromeDriver();
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
             _basePage = new BasePage(_driver);
             _accountPage = new AccountPage(_driver);
             _userData = new UserData();
@@ -39,7 +37,6 @@ namespace MyTests
             string cartQuantity = _accountPage.GetCartQuantity();
             Assert.AreEqual("3", cartQuantity, "Cart quantity was not updated correctly.");
         }
-
 
         [TestCleanup]
         public void TearDown()
