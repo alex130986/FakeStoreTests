@@ -19,10 +19,10 @@ public class OrderPage : BaseClass
     private ILocator BillingCityField => Page.Locator("//input[@id='billing_city']");
     private ILocator BillingPhoneField => Page.Locator("//input[@id='billing_phone']");
     private ILocator CreateNewAccountCheckbox => Page.Locator("//input[@id='createaccount']");
-    private ILocator PaymentCardField => Page.Locator("//input[@id='Field-numberInput']");
-    private ILocator PaymentCardExpiryField => Page.Locator("//input[@id='Field-expiryInput']");
-    private ILocator PaymentCardCvCField => Page.Locator("//input[@placeholder='Kod CVC']");
-    private ILocator TermsCheckbox => Page.Locator("//input[@id='terms']");
+    private ILocator PaymentCardField => Page.GetByLabel("//*[@id='Field-numberInput']");
+    private ILocator PaymentCardExpiryField => Page.Locator("//*[@id='Field-expiryInput']");
+    private ILocator PaymentCardCvCField => Page.Locator("//*[@placeholder='Kod CVC']");
+    private ILocator TermsCheckbox => Page.Locator("//*[@id='terms']");
     private ILocator PlaceOrderButton => Page.Locator("//button[@id='place_order']");
     private ILocator OrderConfirmation => Page.Locator("//header[@class='entry-header']");
 
@@ -37,12 +37,11 @@ public class OrderPage : BaseClass
         await BillingFirstNameField.FillAsync(UserData.Name);
         await BillingLastNameField.FillAsync(UserData.Surname);
         await BillingCountryFieldDropdown.ClickAsync();
-        await BillingCountryField.FillAsync(UserData.Country);
-        await BillingCountryFieldSearchResults.ClickAsync();
         await BillingStreetField.FillAsync(UserData.Street);
         await BillingPostCodeField.FillAsync(UserData.PostalCode);
         await BillingCityField.FillAsync(UserData.City);
         await BillingPhoneField.FillAsync(UserData.PhoneNumber);
+        await PaymentCardField.ScrollIntoViewIfNeededAsync();
         await PaymentCardField.FillAsync(UserData.CardNumber);
         await PaymentCardExpiryField.FillAsync(UserData.ValidityDate);
         await PaymentCardCvCField.FillAsync(UserData.CvC);

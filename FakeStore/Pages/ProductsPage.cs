@@ -15,9 +15,26 @@ public class ProductsPage : BaseClass
     public async Task AddProductToCartAsync(int expectedIncrease = 1)
     {
         var initialCount = await GetAddedToCartProductsAmount();
+        await CloseInfoTipAsync();
 
         await AddToCartProduct.ClickAsync();
-        var newCount = await GetAddedToCartProductsAmount();
+
+        const int retries = 5;
+        const int delay = 500;
+
+        var newCount = initialCount;
+
+        for (var i = 0; i < retries; i++)
+        {
+            await Task.Delay(delay);
+            newCount = await GetAddedToCartProductsAmount();
+
+            if ((newCount - initialCount) == expectedIncrease)
+            {
+                break;
+            }
+        }
+        
         (newCount - initialCount).ShouldBe(expectedIncrease,
             $"The number of items in the cart was expected to increase by {expectedIncrease}");
     }
