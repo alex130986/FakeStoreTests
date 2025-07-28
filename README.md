@@ -1,6 +1,6 @@
 # Fake Store Automation Testing
 
-This project is an automated testing suite for the Fake Store web application using Selenium WebDriver and C#. It includes tests for various functionalities such as account creation, shipping address editing, and cart management.
+This project is an automated testing suite for the Fake Store web application using Playwright, XUnit and C#. It includes tests for various functionalities such as account creation, shipping address editing, and cart management.
 
 ## Installation
 
