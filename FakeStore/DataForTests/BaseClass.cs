@@ -9,7 +9,7 @@ public abstract class BaseClass : TestBase
     //Main Page
     private ILocator CloseInfoTip => Page.GetByText("Ukryj").First;
     private ILocator MainMenuGoToStoreButton => Page.Locator("//*[@id='menu-item-198']");
-    private ILocator MainMenuGoToCartButton => Page.Locator("//*[@id='menu-item-199']");
+    private ILocator MainMenuGoToCartButton => Page.Locator("//*[@id='menu-item-200']");
     private ILocator MainMenuGoToMyAccountButton => Page.Locator("//*[@id='menu-item-201']");
     private ILocator CartAmount => Page.Locator("span.woocommerce-Price-amount.amount");
     private ILocator LoggedInUser => Page.Locator("//*[@id='primary']");
@@ -49,7 +49,7 @@ public abstract class BaseClass : TestBase
         }    
     }
 
-    protected async Task<int> GetAddedToCartProductsAmount()
+    public async Task<int> GetAddedToCartProductsAmount()
     {
         var text = await AmountAddedToCartProducts.InnerTextAsync();
 
@@ -57,12 +57,17 @@ public abstract class BaseClass : TestBase
         return match.Success ? int.Parse(match.Value) : 0;
     }
     
-    
     public async Task<OrderPage> GoToOrderPageAsync()
     {
         await AmountAddedToCartProducts.HoverAsync();
         await GotoOrderPageButton.ClickAsync();
         
         return new OrderPage(Page);
+    }
+
+    public async Task<CartPage> GoToCartPageAsync()
+    {
+        await MainMenuGoToCartButton.ClickAsync();
+        return new CartPage(Page);
     }
 }

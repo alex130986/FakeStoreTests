@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace FakeStore;
+namespace FakeStore.DataForTests;
 
 public static class Navigator
 {
@@ -8,7 +8,7 @@ public static class Navigator
         where TPage : BaseClass
     {
         var constructor = typeof(TPage).GetConstructor(new[] { typeof(IPage) });
-        var pageInstance = (TPage)constructor.Invoke(new object[] { page });
+        var pageInstance = (TPage)constructor?.Invoke([page])!;
         await page.GotoAsync(pageInstance.Url);
 
         return pageInstance;

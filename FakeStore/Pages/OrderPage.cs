@@ -19,7 +19,7 @@ public class OrderPage : BaseClass
     private ILocator BillingCityField => Page.Locator("//input[@id='billing_city']");
     private ILocator BillingPhoneField => Page.Locator("//input[@id='billing_phone']");
     private ILocator CreateNewAccountCheckbox => Page.Locator("//input[@id='createaccount']");
-    private ILocator PaymentCardField => Page.GetByLabel("//*[@id='Field-numberInput']");
+    private ILocator PaymentCardField => Page.Locator("p-Input-input Input p-CardNumberInput-input Input--empty p-Input-input--textRight");
     private ILocator PaymentCardExpiryField => Page.Locator("//*[@id='Field-expiryInput']");
     private ILocator PaymentCardCvCField => Page.Locator("//*[@placeholder='Kod CVC']");
     private ILocator TermsCheckbox => Page.Locator("//*[@id='terms']");
@@ -33,15 +33,13 @@ public class OrderPage : BaseClass
 
     public async Task OrderPagePaymentDetailsFillAsync()
     {
-        await BillingEmailField.FillAsync(UserData.GenerateNewUserEmail());
-        await BillingFirstNameField.FillAsync(UserData.Name);
-        await BillingLastNameField.FillAsync(UserData.Surname);
-        await BillingCountryFieldDropdown.ClickAsync();
-        await BillingStreetField.FillAsync(UserData.Street);
-        await BillingPostCodeField.FillAsync(UserData.PostalCode);
-        await BillingCityField.FillAsync(UserData.City);
-        await BillingPhoneField.FillAsync(UserData.PhoneNumber);
-        await PaymentCardField.ScrollIntoViewIfNeededAsync();
+        await BillingEmailField.PressSequentiallyAsync(UserData.GenerateNewUserEmail());
+        await BillingFirstNameField.PressSequentiallyAsync(UserData.Name);
+        await BillingLastNameField.PressSequentiallyAsync(UserData.Surname);
+        await BillingStreetField.PressSequentiallyAsync(UserData.Street);
+        await BillingPostCodeField.PressSequentiallyAsync(UserData.PostalCode);
+        await BillingCityField.PressSequentiallyAsync(UserData.City);
+        await BillingPhoneField.PressSequentiallyAsync(UserData.PhoneNumber);
         await PaymentCardField.FillAsync(UserData.CardNumber);
         await PaymentCardExpiryField.FillAsync(UserData.ValidityDate);
         await PaymentCardCvCField.FillAsync(UserData.CvC);
